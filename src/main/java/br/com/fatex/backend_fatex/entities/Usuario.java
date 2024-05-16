@@ -23,25 +23,25 @@ public class Usuario {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column(name = "USU_ID")
-    private int usu_id;
+    private int usuId;
 
     @Column(name = "USU_EMAIL")
-    private String usu_email;
+    private String usuEmail;
 
     @Column(name = "USU_SENHA")
-    private String usu_senha;
+    private String usuSenha;
 
     @Column(name = "USU_NOME")
-    private String usu_nome;
+    private String usuNome;
 
     @Column(name = "USU_DT_NASCIMENTO")
     @Temporal(TemporalType.DATE)
-    private Date usu_dt_nascimento;
+    private Date usuDtNascimento;
 
     @Column(name = "USU_GENERO")
     @Enumerated(EnumType.STRING)
-    private Genero usu_genero;
+    private Genero usuGenero;
 
     @Column(name = "USU_CPF", unique = true)
-    private String usu_cpf;
+    private String usuCpf;
 }

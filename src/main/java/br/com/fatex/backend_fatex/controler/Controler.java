@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import br.com.fatex.backend_fatex.entities.Usuario;
 import br.com.fatex.backend_fatex.repository.Repository;
+import br.com.fatex.backend_fatex.repository.RepositorySearch;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -19,6 +22,19 @@ public class Controler {
     
     @Autowired
     private Repository acao;
+
+    @Autowired
+    private RepositorySearch busca;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Usuario u) {
+        Usuario usuarioEncontrado = busca.findByUsuEmailAndUsuSenha(u.getUsuEmail(), u.getUsuSenha());
+        if ((usuarioEncontrado) != null) {
+            return ResponseEntity.ok(usuarioEncontrado);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email ou senha incorretos");
+        }
+    }
 
     @PostMapping("/")
     public Usuario cadastrar( @RequestBody Usuario u ){
