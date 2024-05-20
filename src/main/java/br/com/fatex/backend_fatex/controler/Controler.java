@@ -13,22 +13,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import br.com.fatex.backend_fatex.entities.Usuario;
-import br.com.fatex.backend_fatex.repository.Repository;
-import br.com.fatex.backend_fatex.repository.RepositorySearch;
+import br.com.fatex.backend_fatex.repository.CadastroUsuarioRepository;
+import br.com.fatex.backend_fatex.repository.LoginRepository;
 
 @RestController
 @CrossOrigin(origins = "*")
 public class Controler {
     
     @Autowired
-    private Repository acao;
+    private CadastroUsuarioRepository acao;
 
     @Autowired
-    private RepositorySearch busca;
+    private LoginRepository login;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Usuario u) {
-        Usuario usuarioEncontrado = busca.findByUsuEmailAndUsuSenha(u.getUsuEmail(), u.getUsuSenha());
+    public ResponseEntity<?> login(@RequestBody Usuario usuario) {
+        Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
         if ((usuarioEncontrado) != null) {
             return ResponseEntity.ok(usuarioEncontrado);
         } else {
@@ -36,11 +36,12 @@ public class Controler {
         }
     }
 
-    @PostMapping("/")
-    public Usuario cadastrar( @RequestBody Usuario u ){
-        return acao.save(u);
+    @PostMapping("/cadastro")
+    public Usuario cadastrar( @RequestBody Usuario usuario ){
+        return acao.save(usuario);
     }
 
+    // Exeplos (Apagar depois)
     @GetMapping("/")
     public Iterable<Usuario> selecionar(){
         return acao.findAll();
