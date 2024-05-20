@@ -14,6 +14,8 @@ import jakarta.persistence.JoinColumns;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.util.Date;
 
 @Entity
@@ -28,6 +30,7 @@ public class Carona {
     private int carId;
 
     @Column(name = "CAR_DATA", nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date carData;
 
     @Column(name = "CAR_HORA", nullable = false)
@@ -52,7 +55,6 @@ public class Carona {
         @JoinColumn(name = "VEI_ID", referencedColumnName = "VEI_ID")
     })
     private MotoristaVeiculo motoristaVeiculo;
-
 
     @ManyToOne
     @JoinColumn(name = "END_ID", nullable = false)
