@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
+
 import br.com.fatex.backend_fatex.entities.Usuario;
 import br.com.fatex.backend_fatex.repository.CadastroUsuarioRepository;
 import br.com.fatex.backend_fatex.repository.LoginRepository;
@@ -37,8 +40,12 @@ public class Controler {
     }
 
     @PostMapping("/cadastro")
-    public Usuario cadastrar( @RequestBody Usuario usuario ){
-        return acao.save(usuario);
+    public ResponseEntity<?> cadastrar(@Valid @RequestBody Usuario usuario, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+        }
+        Usuario novoUsuario = acao.save(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
     }
 
     // Exeplos (Apagar depois)
