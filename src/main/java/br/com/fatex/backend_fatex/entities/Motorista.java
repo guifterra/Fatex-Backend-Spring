@@ -25,8 +25,11 @@ public class Motorista {
     @Column(name = "MOT_ID")
     private int motId;
 
-    @Column(name = "MOT_NOTA")
+    @Column(name = "MOT_NOTA", nullable = false)
     private BigDecimal motNota;
+
+    @Column(name = "MOT_QT_AVALIACOES", nullable = false)
+    private int motQtAvaliacoes;
 
     @Column(name = "MOT_CNH", length = 11)
     private String motCnh;
@@ -34,5 +37,13 @@ public class Motorista {
     @OneToOne
     @JoinColumn(name = "USU_ID", referencedColumnName = "USU_ID", unique = true)
     private Usuario usuario;
+
+    public Motorista() { }
+    
+    public Motorista( Usuario usuario ){
+        setMotNota( new BigDecimal("0") );
+        setUsuario( usuario );
+        setMotQtAvaliacoes( 0 );
+    }
 }
 
