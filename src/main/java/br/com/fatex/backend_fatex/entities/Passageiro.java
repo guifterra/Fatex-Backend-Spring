@@ -25,11 +25,22 @@ public class Passageiro {
     @Column(name = "PAS_ID")
     private int pasId;
 
-    @Column(name = "PAS_NOTA")
+    @Column(name = "PAS_NOTA", nullable = false)
     private BigDecimal pasNota;
+
+    @Column(name = "PAS_QT_AVALIACOES", nullable = false)
+    private int pasQtAvaliacoes;
 
     @OneToOne
     @JoinColumn(name = "USU_ID", referencedColumnName = "USU_ID", unique = true)
     private Usuario usuario;
+
+    public Passageiro() { }
+
+    public Passageiro( Usuario usuario ){
+        setPasNota( new BigDecimal("0") );
+        setUsuario( usuario );
+        setPasQtAvaliacoes( 0 );
+    }
 }
 
