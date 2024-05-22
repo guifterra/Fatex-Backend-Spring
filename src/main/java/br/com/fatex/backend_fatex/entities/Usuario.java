@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jakarta.persistence.PrePersist;
 import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,8 +54,23 @@ public class Usuario {
     @Column(name = "USU_GENERO")
     private Genero usuGenero;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "USU_TIPO")
+    private TipoUsuario usuTipo;
+
     @Pattern(regexp = "\\d{11}", message = "CPF deve ter 11 caracteres e conter apenas números")
     @NotBlank(message = "CPF é obrigatório")
     @Column(name = "USU_CPF", unique = true)
     private String usuCpf;
+
+    @PrePersist
+    private void prePersist() {
+        if (this.usuNome == null || this.usuNome.isEmpty()) {
+            this.usuNome = "Usuário";
+        }
+
+        if (this.usuTipo == null) {
+            this.usuTipo = TipoUsuario.valueOf("PASSAGEIRO");
+        }
+    }
 }
