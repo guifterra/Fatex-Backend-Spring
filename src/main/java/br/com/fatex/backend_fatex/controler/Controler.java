@@ -14,13 +14,9 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.validation.BindingResult;
 import jakarta.validation.Valid;
-import br.com.fatex.backend_fatex.entities.Motorista;
-import br.com.fatex.backend_fatex.entities.Passageiro;
-import br.com.fatex.backend_fatex.entities.Usuario;
-import br.com.fatex.backend_fatex.repository.CadastroUsuarioRepository;
-import br.com.fatex.backend_fatex.repository.LoginRepository;
-import br.com.fatex.backend_fatex.repository.CadastrarMotoristaRepository;
-import br.com.fatex.backend_fatex.repository.CadastrarPassageiroRepository;
+import br.com.fatex.backend_fatex.entities.*;
+import br.com.fatex.backend_fatex.jsonSeparator.*;
+import br.com.fatex.backend_fatex.repository.*;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -38,6 +34,15 @@ public class Controler {
     @Autowired
     private CadastrarMotoristaRepository criarMotorista;
 
+    @Autowired
+    private CadastrarVeiculoRepository criarVeiculo;
+
+    @Autowired
+    private VincularMotVeiRepository vincularMotVei;
+
+    @Autowired
+    private BuscaVeiculoRepository buscarVeiculo;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
         Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
@@ -54,7 +59,7 @@ public class Controler {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
         }
         // Criando e salvando Usuario no banco
-        Usuario novoUsuario = acao.save(usuario);
+        Usuario novoUsuario = acao.save( usuario );
 
         // Criando e salvando a conta como Passageiro no banco
         criarContaPassageiro( novoUsuario );
@@ -75,9 +80,47 @@ public class Controler {
 
     public void criarContaMotorista( Usuario usuario ){
 
-        Motorista motorista = new Motorista( usuario );
-        criarMotorista.save( motorista );
+        Motorista novoMotorista = new Motorista( usuario );
+        criarMotorista.save( novoMotorista );
     }
+
+    @PostMapping("/cadastroVeiculo")
+    public ResponseEntity<?> cadastrarVeiculo(@Valid @RequestBody JsonMotVei jsonMotVei, BindingResult result) {
+        
+        Veiculo veiculo = buscarVeiculo.findByVeiPlaca(jsonMotVei.getVeiculo().getVeiPlaca()).orElse(null);
+
+        if( veiculo == null ){
+            if (result.hasErrors()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+            }
+
+            criarVeiculo.save( jsonMotVei.getVeiculo() );
+            return vincularMotoristaAoVeiculo( jsonMotVei );
+        }
+
+        return vincularMotoristaAoVeiculo( jsonMotVei );
+    }
+
+    public ResponseEntity<?> vincularMotoristaAoVeiculo(@Valid @RequestBody JsonMotVei jsonMotVei) {
+        try {
+            // Verifique se o veículo existe no banco de dados
+            Veiculo veiculo = buscarVeiculo.findByVeiPlaca(jsonMotVei.getVeiculo().getVeiPlaca())
+                    .orElseThrow(() -> new IllegalArgumentException("Veículo não encontrado"));
+
+            // Verifique se o motorista existe no banco de dados
+            Motorista motorista = criarMotorista.findById(jsonMotVei.getMotorista().getMotId())
+                    .orElseThrow(() -> new IllegalArgumentException("Motorista não encontrado"));
+
+            // Crie o vínculo entre o motorista e o veículo
+            MotoristaVeiculo novoVinculo = new MotoristaVeiculo(motorista, veiculo);
+            vincularMotVei.save(novoVinculo);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body( veiculo );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar vínculo: " + e.getMessage());
+        }
+    }
+
 
     // Exeplos (Apagar depois)
     @GetMapping("/")
