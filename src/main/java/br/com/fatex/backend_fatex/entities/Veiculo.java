@@ -6,6 +6,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Min;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
@@ -22,13 +26,18 @@ public class Veiculo {
     @Column(name = "VEI_ID")
     private int veiId;
 
-    @Column(name = "VEI_PLACA", nullable = false, unique = true, length = 11)
+    @Pattern(regexp = "^[A-Z]{3}-\\d{4}$", message = "A placa deve ter o formato AAA-1234")
+    @Size(min = 8, max = 8, message = "A placa deve ter exatamente 8 caracteres")
+    @NotBlank(message = "Placa é obrigatória")
+    @Column(name = "VEI_PLACA", nullable = false, unique = true, length = 8)
     private String veiPlaca;
 
     @Column(name = "VEI_MAX_PASSAGEIROS", nullable = false)
+    @Min(value = 1, message = "O máximo de passageiros deve ser maior que 0")
     private int veiMaxPassageiros;
 
     @Column(name = "VEI_COR", nullable = false, length = 255)
+    @NotBlank(message = "A cor do veiculo é obrigatória")
     private String veiCor;
 
     @ManyToOne

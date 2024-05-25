@@ -29,6 +29,13 @@ public class MotoristaVeiculo {
     @JoinColumn(name = "VEI_ID")
     private Veiculo veiculo;
 
+    public MotoristaVeiculo() { }
+
+    public MotoristaVeiculo( Motorista motorista, Veiculo veiculo ){
+        setMotorista( motorista );
+        setVeiculo( veiculo );
+    }
+
     @Getter
     @Setter
     public static class MotoristaVeiculoId implements Serializable {
