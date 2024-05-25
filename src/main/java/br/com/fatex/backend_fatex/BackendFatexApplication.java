@@ -8,6 +8,6 @@ public class BackendFatexApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BackendFatexApplication.class, args);
-	}
+	} 
 
 }

@@ -29,6 +29,13 @@ public class UsuarioEndereco {
     @JoinColumn(name = "END_ID")
     private Endereco endereco;
 
+    public UsuarioEndereco() { }
+
+    public UsuarioEndereco( Usuario usuario, Endereco endereco ){
+        setUsuario(usuario);
+        setEndereco(endereco);
+    }
+
     @Getter
     @Setter
     public static class UsuarioEnderecoId implements Serializable {
