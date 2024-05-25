@@ -38,10 +38,22 @@ public class Controler {
     private CadastrarVeiculoRepository criarVeiculo;
 
     @Autowired
+    private CadastrarEnderecoRepository criarEndereco;
+
+    @Autowired
     private VincularMotVeiRepository vincularMotVei;
 
     @Autowired
+    private VincularUsuEndRepository vincularUsuEnd;
+
+    @Autowired
     private BuscaVeiculoRepository buscarVeiculo;
+
+    @Autowired
+    private BuscaUsuarioRepository buscarUsuario;
+
+    @Autowired
+    private BuscaEnderecoRepository buscarEndereco;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
@@ -121,6 +133,36 @@ public class Controler {
         }
     }
 
+    @PostMapping("/cadastroEndereco")
+    public ResponseEntity<?> cadastrarEndereco(@Valid @RequestBody JsonUsuEnd jsonUsuEnd, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+        }
+
+        Endereco novoEndereco = criarEndereco.save( jsonUsuEnd.getEndereco() );
+        return vincularUsuarioAoEndereco( jsonUsuEnd, novoEndereco );
+    }
+
+    public ResponseEntity<?> vincularUsuarioAoEndereco(@Valid @RequestBody JsonUsuEnd jsonUsuEnd, Endereco novoEndereco) {
+        try {
+            // Verifique se o usuario existe no banco de dados
+            Usuario usuario = buscarUsuario.findById( jsonUsuEnd.getUsuario().getUsuId() )
+                    .orElseThrow(() -> new IllegalArgumentException("Usuario não encontrado"));
+
+            // Verifique se o endereco existe no banco de dados
+            Endereco endereco = buscarEndereco.findById(novoEndereco.getEndId())
+                    .orElseThrow(() -> new IllegalArgumentException("Endereço não encontrado"));
+
+            // Crie o vínculo entre o usuario e o endereco
+            UsuarioEndereco novoVinculo = new UsuarioEndereco(usuario, endereco);
+            vincularUsuEnd.save(novoVinculo);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body( endereco );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar vínculo: " + e.getMessage());
+        }
+    }
 
     // Exeplos (Apagar depois)
     @GetMapping("/")
