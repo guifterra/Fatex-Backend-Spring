@@ -17,6 +17,9 @@ import jakarta.validation.Valid;
 import br.com.fatex.backend_fatex.entities.*;
 import br.com.fatex.backend_fatex.jsonSeparator.*;
 import br.com.fatex.backend_fatex.repository.*;
+import br.com.fatex.backend_fatex.services.*;
+
+import java.math.BigDecimal;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -54,6 +57,12 @@ public class Controler {
 
     @Autowired
     private BuscaEnderecoRepository buscarEndereco;
+
+    @Autowired
+    private GeocodingService geocodingService;
+
+    @Autowired
+    private ReverseGeocodingService reverseGeocodingService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
@@ -140,14 +149,46 @@ public class Controler {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
         }
 
-        Endereco novoEndereco = criarEndereco.save( jsonUsuEnd.getEndereco() );
-        return vincularUsuarioAoEndereco( jsonUsuEnd, novoEndereco );
+        String enderecoEmString = String.format("%d %s, %s, %s SP", 
+        jsonUsuEnd.getEndereco().getEndNumero(), 
+        jsonUsuEnd.getEndereco().getEndRua(), 
+        jsonUsuEnd.getEndereco().getEndBairro(), 
+        jsonUsuEnd.getEndereco().getEndCidade());
+
+        String dadosGeograficos = getCoordinates( enderecoEmString );
+        
+        if (dadosGeograficos != null && dadosGeograficos.contains(",")) {
+            String[] coordenadas = dadosGeograficos.split(",");
+            try {
+                BigDecimal latitude = new BigDecimal(coordenadas[0].trim());
+                BigDecimal longitude = new BigDecimal(coordenadas[1].trim());
+
+                jsonUsuEnd.getEndereco().setEndLatitude(latitude);
+                jsonUsuEnd.getEndereco().setEndLongitude(longitude);
+
+                Endereco novoEndereco = criarEndereco.save(jsonUsuEnd.getEndereco());
+                return vincularUsuarioAoEndereco(jsonUsuEnd, novoEndereco);
+            } catch (NumberFormatException e) {
+                // Erro no formato da coordenada
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Formato de coordenadas inválido.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados geográficos inválidos.");
+        }
+    }
+
+    public String getCoordinates(String address) {
+        return geocodingService.getCoordinates(address);
+    }
+
+    public String getAddress(double lat, double lng) {
+        return reverseGeocodingService.getAddress(lat, lng);
     }
 
     public ResponseEntity<?> vincularUsuarioAoEndereco(@Valid @RequestBody JsonUsuEnd jsonUsuEnd, Endereco novoEndereco) {
         try {
             // Verifique se o usuario existe no banco de dados
-            Usuario usuario = buscarUsuario.findById( jsonUsuEnd.getUsuario().getUsuId() )
+            Usuario usuario = buscarUsuario.findByUsuEmail( jsonUsuEnd.getUsuario().getUsuEmail() )
                     .orElseThrow(() -> new IllegalArgumentException("Usuario não encontrado"));
 
             // Verifique se o endereco existe no banco de dados
@@ -166,8 +207,8 @@ public class Controler {
 
     // Exeplos (Apagar depois)
     @GetMapping("/")
-    public Iterable<Usuario> selecionar(){
-        return acao.findAll();
+    public Iterable<Endereco> selecionar(){
+        return criarEndereco.findAll();
     }
 
     @PutMapping("/")
