@@ -19,8 +19,6 @@ import br.com.fatex.backend_fatex.jsonSeparator.*;
 import br.com.fatex.backend_fatex.repository.*;
 import br.com.fatex.backend_fatex.services.*;
 
-import java.math.BigDecimal;
-
 @RestController
 @CrossOrigin(origins = "*")
 public class Controler {
@@ -160,8 +158,8 @@ public class Controler {
         if (dadosGeograficos != null && dadosGeograficos.contains(",")) {
             String[] coordenadas = dadosGeograficos.split(",");
             try {
-                BigDecimal latitude = new BigDecimal(coordenadas[0].trim());
-                BigDecimal longitude = new BigDecimal(coordenadas[1].trim());
+                double latitude = Double.parseDouble(coordenadas[0].trim());
+                double longitude = Double.parseDouble(coordenadas[1].trim());
 
                 jsonUsuEnd.getEndereco().setEndLatitude(latitude);
                 jsonUsuEnd.getEndereco().setEndLongitude(longitude);

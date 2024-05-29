@@ -55,9 +55,5 @@ public class Carona {
         @JoinColumn(name = "VEI_ID", referencedColumnName = "VEI_ID")
     })
     private MotoristaVeiculo motoristaVeiculo;
-
-    @ManyToOne
-    @JoinColumn(name = "END_ID", nullable = false)
-    private Endereco endereco;
 }
 

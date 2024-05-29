@@ -3,8 +3,6 @@ package br.com.fatex.backend_fatex.entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
-import java.math.BigDecimal;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,9 +34,9 @@ public class Endereco {
     private String endCidade;
 
     @Column(name = "END_LATITUDE")
-    private BigDecimal endLatitude;
+    private Double endLatitude;
 
     @Column(name = "END_LONGITUDE")
-    private BigDecimal endLongitude;
+    private Double endLongitude;
 }
 
