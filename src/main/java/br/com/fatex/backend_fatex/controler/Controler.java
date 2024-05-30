@@ -60,6 +60,12 @@ public class Controler {
     private BuscaEnderecoRepository buscarEndereco;
 
     @Autowired
+    private ModeloRepository modelo;
+
+    @Autowired
+    private MarcaRepository marca;
+
+    @Autowired
     private GeocodingService geocodingService;
 
     @Autowired
@@ -216,6 +222,16 @@ public class Controler {
         Carona novoCarona = criarCarona.save( carona );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(novoCarona);
+    }
+
+    @GetMapping("/listaDeModelos")
+    public Iterable<Modelo> getListaModelos(){
+        return modelo.findAll();
+    }
+
+    @GetMapping("/listaDeMarcas")
+    public Iterable<Marca> getListaMarcas(){
+        return marca.findAll();
     }
 
     // Exeplos (Apagar depois)
