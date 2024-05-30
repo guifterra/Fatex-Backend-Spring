@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import jakarta.persistence.PrePersist;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,7 +48,7 @@ public class Usuario {
 
     @Column(name = "USU_DT_NASCIMENTO")
     @Temporal(TemporalType.DATE)
-    private Date usuDtNascimento;
+    private LocalDate usuDtNascimento;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "USU_GENERO")
