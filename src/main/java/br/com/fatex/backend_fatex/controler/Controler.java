@@ -19,6 +19,8 @@ import br.com.fatex.backend_fatex.jsonSeparator.*;
 import br.com.fatex.backend_fatex.repository.*;
 import br.com.fatex.backend_fatex.services.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin(origins = "*")
 public class Controler {
@@ -64,6 +66,15 @@ public class Controler {
 
     @Autowired
     private MarcaRepository marca;
+
+    @Autowired
+    private MotHasVeiRepository identificarVeiculos;
+
+    @Autowired
+    private IdentificarPassageiroRepository identificarPassageiro;
+
+    @Autowired
+    private IdentificarMotoristaRepository identificarMotorista;
 
     @Autowired
     private GeocodingService geocodingService;
@@ -224,6 +235,32 @@ public class Controler {
         return ResponseEntity.status(HttpStatus.CREATED).body(novoCarona);
     }
 
+    @GetMapping("/estatisticasComoPassageiro")
+    public ResponseEntity<?> getEstatisticasPassageiro(@RequestBody Usuario usuario){
+        
+        Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
+        Passageiro passageiroEncontrado = identificarPassageiro.findByUsuario(usuarioEncontrado);
+
+        if( passageiroEncontrado == null ){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Seus dados de passageiro nao foram encontrados!");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body( passageiroEncontrado );
+    }
+
+    @GetMapping("/estatisticasComoMotorista")
+    public ResponseEntity<?> getEstatisticasMotorista(@RequestBody Usuario usuario){
+        
+        Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
+        Motorista motoristaEncontrado = identificarMotorista.findByUsuario(usuarioEncontrado);
+
+        if( motoristaEncontrado == null ){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Seus dados de motorista nao foram encontrados!");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body( motoristaEncontrado );
+    }
+
     @GetMapping("/listaDeModelos")
     public Iterable<Modelo> getListaModelos(){
         return modelo.findAll();
@@ -232,6 +269,15 @@ public class Controler {
     @GetMapping("/listaDeMarcas")
     public Iterable<Marca> getListaMarcas(){
         return marca.findAll();
+    }
+
+    @GetMapping("/listaDeVeiculos")
+    public List<Veiculo> getListaVeiculos(@RequestBody Usuario usuario){
+        
+        Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
+        Motorista motoristaEncontrado = identificarMotorista.findByUsuario(usuarioEncontrado);
+
+        return identificarVeiculos.findVeiculosDoMotorista(motoristaEncontrado.getMotId());
     }
 
     // Exeplos (Apagar depois)
