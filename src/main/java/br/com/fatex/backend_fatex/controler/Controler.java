@@ -42,6 +42,9 @@ public class Controler {
     private CadastrarEnderecoRepository criarEndereco;
 
     @Autowired
+    private CadastrarCaronaRepository criarCarona;
+
+    @Autowired
     private VincularMotVeiRepository vincularMotVei;
 
     @Autowired
@@ -201,6 +204,18 @@ public class Controler {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar vínculo: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/cadastroCarona")
+    public ResponseEntity<?> cadastrarCarona(@Valid @RequestBody Carona carona, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+        }
+        
+        Carona novoCarona = criarCarona.save( carona );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoCarona);
     }
 
     // Exeplos (Apagar depois)

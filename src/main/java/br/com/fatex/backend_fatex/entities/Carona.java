@@ -16,7 +16,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "CAR_CARONAS")
@@ -31,16 +31,18 @@ public class Carona {
 
     @Column(name = "CAR_DATA", nullable = false)
     @Temporal(TemporalType.DATE)
-    private Date carData;
+    private LocalDate carData;
 
     @Column(name = "CAR_HORA", nullable = false)
     private String carHora;
 
-    @Column(name = "CAR_PARTIDA", nullable = false, length = 255)
-    private String carPartida;
+    @ManyToOne
+    @JoinColumn(name = "CAR_PARTIDA", referencedColumnName = "END_ID", nullable = false)
+    private Endereco carPartida;
 
-    @Column(name = "CAR_CHEGADA", nullable = false, length = 255)
-    private String carChegada;
+    @ManyToOne
+    @JoinColumn(name = "CAR_CHEGADA", referencedColumnName = "END_ID", nullable = false)
+    private Endereco carChegada;
 
     @Column(name = "CAR_VALOR_DOACAO", nullable = false, precision = 10, scale = 2)
     private BigDecimal carValorDoacao;
