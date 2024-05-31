@@ -71,6 +71,9 @@ public class Controler {
     private MotHasVeiRepository identificarVeiculos;
 
     @Autowired
+    private UsuHasEndRepository identificarEnderecos;
+
+    @Autowired
     private IdentificarPassageiroRepository identificarPassageiro;
 
     @Autowired
@@ -280,12 +283,15 @@ public class Controler {
         return identificarVeiculos.findVeiculosDoMotorista(motoristaEncontrado.getMotId());
     }
 
-    // Exeplos (Apagar depois)
-    @GetMapping("/")
-    public Iterable<Endereco> selecionar(){
-        return criarEndereco.findAll();
+    @GetMapping("/listaDeEnderecos")
+    public List<Endereco> getListaEnderecos(@RequestBody Usuario usuario){
+        
+        Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
+
+        return identificarEnderecos.findEnderecosDoUsuario(usuarioEncontrado.getUsuId());
     }
 
+    // Exeplos (Apagar depois)
     @PutMapping("/")
     public Usuario editar( @RequestBody Usuario u ){
         return acao.save(u);
