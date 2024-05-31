@@ -238,7 +238,7 @@ public class Controler {
         return ResponseEntity.status(HttpStatus.CREATED).body(novoCarona);
     }
 
-    @GetMapping("/estatisticasComoPassageiro")
+    @PostMapping("/estatisticasComoPassageiro")
     public ResponseEntity<?> getEstatisticasPassageiro(@RequestBody Usuario usuario){
         
         Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
@@ -251,7 +251,7 @@ public class Controler {
         return ResponseEntity.status(HttpStatus.CREATED).body( passageiroEncontrado );
     }
 
-    @GetMapping("/estatisticasComoMotorista")
+    @PostMapping("/estatisticasComoMotorista")
     public ResponseEntity<?> getEstatisticasMotorista(@RequestBody Usuario usuario){
         
         Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
@@ -274,7 +274,7 @@ public class Controler {
         return marca.findAll();
     }
 
-    @GetMapping("/listaDeVeiculos")
+    @PostMapping("/listaDeVeiculos")
     public List<Veiculo> getListaVeiculos(@RequestBody Usuario usuario){
         
         Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
@@ -283,7 +283,7 @@ public class Controler {
         return identificarVeiculos.findVeiculosDoMotorista(motoristaEncontrado.getMotId());
     }
 
-    @GetMapping("/listaDeEnderecos")
+    @PostMapping("/listaDeEnderecos")
     public List<Endereco> getListaEnderecos(@RequestBody Usuario usuario){
         
         Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
