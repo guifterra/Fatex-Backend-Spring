@@ -19,6 +19,7 @@ import br.com.fatex.backend_fatex.jsonSeparator.*;
 import br.com.fatex.backend_fatex.repository.*;
 import br.com.fatex.backend_fatex.services.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -78,6 +79,9 @@ public class Controler {
 
     @Autowired
     private IdentificarMotoristaRepository identificarMotorista;
+
+    @Autowired
+    private PasInCarRepository identificarCarona;
 
     @Autowired
     private GeocodingService geocodingService;
@@ -289,6 +293,28 @@ public class Controler {
         Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
 
         return identificarEnderecos.findEnderecosDoUsuario(usuarioEncontrado.getUsuId());
+    }
+
+    @PostMapping("/historicoDeCaronas")
+    public List<Carona> getMeuHistoricoDeCaronas(@RequestBody Usuario usuario){
+        
+        Usuario usuarioEncontrado = login.findByUsuEmailAndUsuSenha(usuario.getUsuEmail(), usuario.getUsuSenha());
+        Passageiro passageiroEncontrado = identificarPassageiro.findByUsuario(usuarioEncontrado);
+        Motorista motoristaEncontrado = identificarMotorista.findByUsuario(usuarioEncontrado);
+
+        List<Carona> caronasComoMotorista = criarCarona.findCaronasComoMotorista(
+            motoristaEncontrado.getMotId()
+        );
+
+        List<Carona> caronasComoPassageiro = identificarCarona.findCaronasComoPassageiro(
+            passageiroEncontrado.getPasId()
+        );
+
+        List<Carona> todasAsCaronas = new ArrayList<>();
+        todasAsCaronas.addAll(caronasComoMotorista);
+        todasAsCaronas.addAll(caronasComoPassageiro);
+
+        return todasAsCaronas;
     }
 
     // Exeplos (Apagar depois)
