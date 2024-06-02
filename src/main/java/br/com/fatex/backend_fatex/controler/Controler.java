@@ -130,6 +130,11 @@ public class Controler {
         criarMotorista.save( novoMotorista );
     }
 
+    @PostMapping("/caronaPontos")
+    public CaronaPontos caronaPontos(@RequestBody CaronaPontos caronaPontos) {
+        return caronaPontos;
+    }
+
     @PostMapping("/cadastroVeiculo")
     public ResponseEntity<?> cadastrarVeiculo(@Valid @RequestBody JsonMotVei jsonMotVei, BindingResult result) {
         
