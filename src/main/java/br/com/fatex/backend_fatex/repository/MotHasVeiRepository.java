@@ -8,6 +8,9 @@ import java.util.List;
 
 public interface MotHasVeiRepository extends CrudRepository<MotoristaVeiculo, MotoristaVeiculo.MotoristaVeiculoId> {
     
-    @Query("SELECT mv.veiculo FROM MotoristaVeiculo mv WHERE mv.motorista.id = ?1")
+    @Query("SELECT mv.veiculo FROM MotoristaVeiculo mv WHERE mv.motorista.id = ?1 AND mhvStatus = 'ATIVO'")
     List<Veiculo> findVeiculosDoMotorista(int motoristaId);
+
+    @Query("SELECT mv FROM MotoristaVeiculo mv WHERE mv.motorista.id = ?1 AND mv.veiculo.id = ?2")
+    MotoristaVeiculo findMotVei(int motoristaId, int veiculoId);
 }

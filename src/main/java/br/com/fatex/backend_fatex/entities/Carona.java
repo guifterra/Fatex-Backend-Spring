@@ -51,6 +51,12 @@ public class Carona {
     @Column(name = "CAR_STATUS", nullable = false)
     private StatusCarona carStatus;
 
+    @Column(name = "CAR_VAGAS")
+    private int carVagas;
+
+    @Column(name = "CAR_VALOR_MINIMO", precision = 10, scale = 2)
+    private BigDecimal carValorMinimo;
+
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name = "MOT_ID", referencedColumnName = "MOT_ID"),

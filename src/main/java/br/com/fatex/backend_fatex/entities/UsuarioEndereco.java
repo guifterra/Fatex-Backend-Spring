@@ -1,7 +1,10 @@
 package br.com.fatex.backend_fatex.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -29,11 +32,16 @@ public class UsuarioEndereco {
     @JoinColumn(name = "END_ID")
     private Endereco endereco;
 
+    @Column(name = "UHE_STATUS")
+    @Enumerated(EnumType.STRING)
+    private Visibilidade uheStatus = Visibilidade.ATIVO;
+
     public UsuarioEndereco() { }
 
     public UsuarioEndereco( Usuario usuario, Endereco endereco ){
         setUsuario(usuario);
         setEndereco(endereco);
+        this.uheStatus = Visibilidade.ATIVO;
     }
 
     @Getter
@@ -42,5 +50,6 @@ public class UsuarioEndereco {
         private int usuId;
         private int endId;
     }
+
 }
 

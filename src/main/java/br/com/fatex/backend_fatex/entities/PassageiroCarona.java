@@ -29,5 +29,13 @@ public class PassageiroCarona {
     @ManyToOne
     @JoinColumn(name = "CAR_ID", nullable = false)
     private Carona carona;
+
+    public PassageiroCarona() { }
+
+    public PassageiroCarona( Passageiro passageiro, Carona carona ){
+
+        setPassageiro(passageiro);
+        setCarona(carona);
+    }
 }
 

@@ -36,7 +36,6 @@ public class Usuario {
     @Column(name = "USU_EMAIL")
     private String usuEmail;
 
-    @Pattern(regexp = "(?=.*[A-Z])(?=.*[@#$%^&+=-_]).{6,}", message = "Senha deve conter 1 caracter maiúsculo, tamanho mínimo de 6 e um caracter especial")
     @NotBlank(message = "Senha é obrigatória")
     @Column(name = "USU_SENHA")
     private String usuSenha;
@@ -62,6 +61,9 @@ public class Usuario {
     @NotBlank(message = "CPF é obrigatório")
     @Column(name = "USU_CPF", unique = true)
     private String usuCpf;
+
+    @Column(name = "USU_TELEFONE")
+    private String usuTelefone;
 
     @PrePersist
     private void prePersist() {
