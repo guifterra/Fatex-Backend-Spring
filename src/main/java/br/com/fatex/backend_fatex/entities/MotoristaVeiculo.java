@@ -38,9 +38,9 @@ public class MotoristaVeiculo {
 
     public MotoristaVeiculo() { }
 
-    public MotoristaVeiculo( Motorista motorista, Veiculo veiculo ){
-        setMotorista( motorista );
-        setVeiculo( veiculo );
+    public MotoristaVeiculo(Motorista motorista, Veiculo veiculo) {
+        setMotorista(motorista);
+        setVeiculo(veiculo);
         this.mhvStatus = Visibilidade.ATIVO;
     }
 
@@ -50,6 +50,5 @@ public class MotoristaVeiculo {
         private int motId;
         private int veiId;
     }
-
 }
 

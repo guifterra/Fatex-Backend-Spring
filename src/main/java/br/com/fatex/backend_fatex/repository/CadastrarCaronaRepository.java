@@ -8,7 +8,7 @@ import br.com.fatex.backend_fatex.entities.Carona;
 
 public interface CadastrarCaronaRepository extends CrudRepository<Carona, Integer>{
     
-    @Query("SELECT c FROM Carona c WHERE c.motoristaVeiculo.motorista.motId = ?1 AND c.carStatus = 'Concluida'")
+    @Query("SELECT c FROM Carona c WHERE c.motoristaVeiculo.motorista.motId = ?1")
     List<Carona> findCaronasComoMotorista(int motoristaId);
 
     @Query("SELECT c FROM Carona c WHERE c.carStatus = 'Agendada' AND c.motoristaVeiculo IS NULL AND DATE(c.carData) = DATE(NOW()) AND TIME(c.carHora) > TIME(NOW())")

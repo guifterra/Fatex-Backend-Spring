@@ -2,6 +2,7 @@ package br.com.fatex.backend_fatex.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,11 +37,11 @@ public class Carona {
     @Column(name = "CAR_HORA", nullable = false)
     private String carHora;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "CAR_PARTIDA", referencedColumnName = "END_ID", nullable = false)
     private Endereco carPartida;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "CAR_CHEGADA", referencedColumnName = "END_ID", nullable = false)
     private Endereco carChegada;
 
@@ -57,7 +58,7 @@ public class Carona {
     @Column(name = "CAR_VALOR_MINIMO", precision = 10, scale = 2)
     private BigDecimal carValorMinimo;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumns({
         @JoinColumn(name = "MOT_ID", referencedColumnName = "MOT_ID"),
         @JoinColumn(name = "VEI_ID", referencedColumnName = "VEI_ID")

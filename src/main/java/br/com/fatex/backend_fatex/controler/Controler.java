@@ -25,7 +25,7 @@ import java.util.List;
 import org.jasypt.util.text.BasicTextEncryptor;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = { "http://localhost:4200" , "https://fatex-frontend-angular.vercel.app" })
 public class Controler {
     
     @Autowired
@@ -389,14 +389,40 @@ public class Controler {
 
     @PostMapping("/cadastroCarona")
     public ResponseEntity<?> cadastrarCarona(@Valid @RequestBody Carona carona, BindingResult result) {
-
         if (result.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
         }
-        
-        Carona novoCarona = criarCarona.save( carona );
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoCarona);
+        try {
+            // Log the incoming Carona data
+            System.out.println("Received Carona: " + carona);
+
+            // Ensure MotoristaVeiculo is saved before saving Carona
+            MotoristaVeiculo motoristaVeiculo = carona.getMotoristaVeiculo();
+            if (motoristaVeiculo != null) {
+                // Check if the MotoristaVeiculo already exists
+                MotoristaVeiculo existingMotVei = identificarVeiculos.findMotVei(
+                    motoristaVeiculo.getMotorista().getMotId(),
+                    motoristaVeiculo.getVeiculo().getVeiId()
+                );
+
+                if (existingMotVei == null) {
+                    System.out.println("Saving MotoristaVeiculo: " + motoristaVeiculo);
+                    motoristaVeiculo = identificarVeiculos.save(motoristaVeiculo);
+                } else {
+                    motoristaVeiculo = existingMotVei;
+                }
+
+                carona.setMotoristaVeiculo(motoristaVeiculo);
+            }
+
+            Carona novoCarona = criarCarona.save(carona);
+            System.out.println("Saved Carona: " + novoCarona);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoCarona);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar carona: " + e.getMessage());
+        }
     }
 
     // Para entrada e saida de motorista
@@ -441,18 +467,19 @@ public class Controler {
 
     @PostMapping("/entrarNaCarona")
     public ResponseEntity<?> entrarNaCarona(@Valid @RequestBody JsonPasCar jsonPasCar, BindingResult result) {
-
         if (result.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
         }
         
-        if( identificarCarona.identificarVagasOcupadas(jsonPasCar.getCarona().getCarId()) < jsonPasCar.getCarona().getCarVagas() ){
-            PassageiroCarona entradaNaCarona = new PassageiroCarona( jsonPasCar.getPassageiro(), jsonPasCar.getCarona() );
-            identificarCarona.save( entradaNaCarona );
+        if (identificarCarona.identificarVagasOcupadas(jsonPasCar.getCarona().getCarId()) < jsonPasCar.getCarona().getCarVagas()) {
+            PassageiroCarona entradaNaCarona = new PassageiroCarona(jsonPasCar.getPassageiro(), jsonPasCar.getCarona());
+            identificarCarona.save(entradaNaCarona);
             
+            // Return a JSON response with a success message
             return ResponseEntity.status(HttpStatus.CREATED).body("Entrada na carona realizada com sucesso!");
-        }else{
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A carona esta lotada, nao eh possivel entrar!");
+        } else {
+            // Return a JSON response with a error message
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A carona está lotada, não é possível entrar!");
         }
     }
 
@@ -587,25 +614,32 @@ public class Controler {
     }
 
     @PostMapping("/historicoDeCaronas")
-    public List<Carona> getMeuHistoricoDeCaronas(@RequestBody Usuario usuario){
-        
+    public ResponseEntity<List<Carona>> getMeuHistoricoDeCaronas(@RequestBody Usuario usuario) {
         Usuario usuarioEncontrado = login.findByUsuEmail(usuario.getUsuEmail());
+        
+        if (usuarioEncontrado == null) {
+            return ResponseEntity.notFound().build();
+        }
+    
+        List<Carona> todasAsCaronas = new ArrayList<>();
+    
+        // Fetch Passageiro and Motorista associated with the found Usuario
         Passageiro passageiroEncontrado = identificarPassageiro.findByUsuario(usuarioEncontrado);
         Motorista motoristaEncontrado = identificarMotorista.findByUsuario(usuarioEncontrado);
-
-        List<Carona> caronasComoMotorista = criarCarona.findCaronasComoMotorista(
-            motoristaEncontrado.getMotId()
-        );
-
-        List<Carona> caronasComoPassageiro = identificarCarona.findCaronasComoPassageiro(
-            passageiroEncontrado.getPasId()
-        );
-
-        List<Carona> todasAsCaronas = new ArrayList<>();
-        todasAsCaronas.addAll(caronasComoMotorista);
-        todasAsCaronas.addAll(caronasComoPassageiro);
-
-        return todasAsCaronas;
+    
+        // Fetch caronas as Motorista if exists
+        if (motoristaEncontrado != null) {
+            List<Carona> caronasComoMotorista = criarCarona.findCaronasComoMotorista(motoristaEncontrado.getMotId());
+            todasAsCaronas.addAll(caronasComoMotorista);
+        }
+    
+        // Fetch caronas as Passageiro if exists
+        if (passageiroEncontrado != null) {
+            List<Carona> caronasComoPassageiro = identificarCarona.findCaronasComoPassageiro(passageiroEncontrado.getPasId());
+            todasAsCaronas.addAll(caronasComoPassageiro);
+        }
+    
+        return ResponseEntity.ok(todasAsCaronas);
     }
 
     @DeleteMapping("/sairDaCarona")

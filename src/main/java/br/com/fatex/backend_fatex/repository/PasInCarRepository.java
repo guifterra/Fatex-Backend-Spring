@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface PasInCarRepository extends CrudRepository<PassageiroCarona, Integer>{
     
-    @Query("SELECT pc.carona FROM PassageiroCarona pc WHERE pc.passageiro.id = ?1 AND pc.carona.carStatus = 'Concluida'")
+    @Query("SELECT pc.carona FROM PassageiroCarona pc WHERE pc.passageiro.id = ?1")
     List<Carona> findCaronasComoPassageiro(int passageiroId);
 
     @Query("SELECT COUNT(pc.carona.id) FROM PassageiroCarona pc WHERE pc.carona.id = ?1")
